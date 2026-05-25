@@ -66,6 +66,7 @@ for col in data.columns:
             data[col].median()
         )
 
+
 # Replace infinite values
 data = data.replace(
     [np.inf, -np.inf],
@@ -74,6 +75,14 @@ data = data.replace(
 
 # Final cleanup
 data = data.fillna(0)
+
+# =====================================================
+# FEATURES & TARGET
+# =====================================================
+
+X = data.drop(columns=[TARGET])
+y = data[TARGET]
+
 
 # =====================================================
 # TRAIN TEST SPLIT
