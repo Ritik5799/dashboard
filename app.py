@@ -37,10 +37,15 @@ data = load_data()
 
 TARGET = "isFraud"
 
-# Fill missing values
 for col in data.columns:
 
-    if data[col].dtype == "object":
+    if col == TARGET:
+        continue
+
+    if (
+        data[col].dtype == "object"
+        or str(data[col].dtype) == "string"
+    ):
 
         data[col] = data[col].fillna(
             "Unknown"
@@ -52,14 +57,23 @@ for col in data.columns:
 
     else:
 
+        data[col] = pd.to_numeric(
+            data[col],
+            errors="coerce"
+        )
+
         data[col] = data[col].fillna(
             data[col].median()
         )
 
-# Features & Target
-X = data.drop(columns=[TARGET])
+# Replace infinite values
+data = data.replace(
+    [np.inf, -np.inf],
+    np.nan
+)
 
-y = data[TARGET]
+# Final cleanup
+data = data.fillna(0)
 
 # =====================================================
 # TRAIN TEST SPLIT
