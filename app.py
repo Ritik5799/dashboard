@@ -5,7 +5,6 @@ import shap
 import matplotlib.pyplot as plt
 import seaborn as sns
 import lightgbm as lgb
-import joblib
 
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -23,19 +22,76 @@ st.set_page_config(
 # LOAD DATA
 # =====================================================
 
-
 @st.cache_data
 def load_data():
-    return pd.read_csv("sample_data.csv")
+
+    data = pd.read_csv("sample_data.csv")
+
+    return data
 
 data = load_data()
 
+# =====================================================
+# PREPROCESSING
+# =====================================================
+
+TARGET = "isFraud"
+
+# Fill missing values
+for col in data.columns:
+
+    if data[col].dtype == "object":
+
+        data[col] = data[col].fillna(
+            "Unknown"
+        )
+
+        data[col] = data[col].astype(
+            "category"
+        ).cat.codes
+
+    else:
+
+        data[col] = data[col].fillna(
+            data[col].median()
+        )
+
+# Features & Target
+X = data.drop(columns=[TARGET])
+
+y = data[TARGET]
 
 # =====================================================
-# LOAD MODEL
+# TRAIN TEST SPLIT
 # =====================================================
 
-model = joblib.load("model.pkl")
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+
+# =====================================================
+# TRAIN MODEL
+# =====================================================
+
+@st.cache_resource
+def train_model():
+
+    model = lgb.LGBMClassifier(
+        n_estimators=100,
+        learning_rate=0.05,
+        max_depth=6,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train)
+
+    return model
+
+model = train_model()
 
 # =====================================================
 # SHAP EXPLAINER
