@@ -23,54 +23,13 @@ st.set_page_config(
 # LOAD DATA
 # =====================================================
 
+
 @st.cache_data
 def load_data():
-
-    train_transaction = pd.read_csv("train_transaction.csv")
-    train_identity = pd.read_csv("train_identity.csv")
-
-    data = train_transaction.merge(
-        train_identity,
-        how="left",
-        on="TransactionID"
-    )
-
-    return data
+    return pd.read_csv("sample_data.csv")
 
 data = load_data()
 
-# =====================================================
-# PREPROCESSING
-# =====================================================
-
-TARGET = "isFraud"
-
-for col in data.columns:
-
-    if data[col].dtype == "object":
-        data[col] = data[col].fillna("Unknown")
-        data[col] = data[col].astype("category").cat.codes
-
-    else:
-        data[col] = data[col].fillna(
-            data[col].median()
-        )
-
-X = data.drop(columns=[TARGET])
-
-y = data[TARGET]
-
-# =====================================================
-# TRAIN TEST SPLIT
-# =====================================================
-
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.2,
-    random_state=42,
-    stratify=y
-)
 
 # =====================================================
 # LOAD MODEL
