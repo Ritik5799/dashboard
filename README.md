@@ -178,7 +178,7 @@ https://share.streamlit.io
 
 # 🌐 Live Application
 
-👉 [Live Demo](https://fraud-detection-99876-rk.streamlit.app/)
+👉 <https://fraud-detection-99876-rk.streamlit.app/>
 
 ---
 
